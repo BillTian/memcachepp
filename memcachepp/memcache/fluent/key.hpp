@@ -29,7 +29,7 @@ namespace memcache {
 
                 explicit key_impl
                     (
-                     Handle & handle, 
+                     Handle & handle,
                      std::string const & key
                     )
                     :
@@ -100,10 +100,10 @@ namespace memcache {
                 template <typename DataType>
                     key_impl const &
                     operator=(DataType const & data) const {
-                        handle_ << 
+                        handle_ <<
                             ::memcache::set(key_, data, expiration_, failover_expiration_);
                         return *this;
-                    }
+                    };
 
                 key_impl const &
                 operator %=(string const & data) const {
@@ -135,7 +135,7 @@ namespace memcache {
                     return *this;
                 }
 
-                key_impl const & 
+                key_impl const &
                 operator >>=(string const & data) const {
                     handle_ <<
                         ::memcache::raw_append(key_, data, expiration_, failover_expiration_);
@@ -163,7 +163,7 @@ namespace memcache {
                     return *this;
                 }
 
-                key_impl const & 
+                key_impl const &
                 operator --(int) const {
                     handle_ <<
                         ::memcache::decr(key_, value_, 1u);
@@ -180,12 +180,12 @@ namespace memcache {
                 operator boost::uint64_t const & () const {
                     return value_;
                 }
-                
+
                 private:
                     Handle & handle_;
-                    mutable std::string key_;
-                    mutable detail::expire_type expiration_;
-                    mutable detail::failover_expire_type failover_expiration_;
+                    std::string key_;
+                    detail::expire_type expiration_;
+                    detail::failover_expire_type failover_expiration_;
                     mutable boost::uint64_t value_;
             };
 
@@ -195,7 +195,7 @@ namespace memcache {
         inline fluent::key_impl<Handle>
         key(Handle & handle, std::string const & key) {
             return fluent::key_impl<Handle>(handle, key);
-        }
+        };
 
 } // namespace memcache
 

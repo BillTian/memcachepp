@@ -20,9 +20,9 @@
 #ifndef MEMCACHEPP_FLUENT_GET_20080220
 #define MEMCACHEPP_FLUENT_GET_20080220
 
-namespace memcache { 
-    
-    namespace fluent { 
+namespace memcache {
+
+    namespace fluent {
 
         template <typename Handle>
         struct get_impl {
@@ -32,18 +32,18 @@ namespace memcache {
             template <typename Container>
                 void operator() (Container & container) const {
                     _handle << ::memcache::get(_key, container);
-                }
-            
+                };
+
             private:
                 Handle & _handle;
-                mutable std::string _key;
+                std::string _key;
         };
 
         template <typename Handle>
             inline get_impl<Handle>
             get(Handle & handle, std::string const & key) {
                 return get_impl<Handle>(handle, key);
-            }
+            };
 
     } // namespace fluent
 

@@ -5,8 +5,8 @@
 // (See accompanying file LICENSE_1_0.txt or copy at
 // http://www.boost.org/LICENSE_1_0.txt)
 
-#ifndef MEMCACHE_DETAIL_TAGS_HPP__
-#define MEMCACHE_DETAIL_TAGS_HPP__
+#ifndef __MEMCACHE_DETAIL_TAGS_HPP__
+#define __MEMCACHE_DETAIL_TAGS_HPP__
 
 namespace memcache { namespace detail {
 
@@ -15,10 +15,10 @@ namespace memcache { namespace detail {
         struct default_tag { };
 
     } // namespace tags
-    
+
 } // namespace detail
 
 } // namespace memcache
 
-#endif // MEMCACHE_DETAIL_TAGS_HPP__
+#endif // __MEMCACHE_DETAIL_TAGS_HPP__
 

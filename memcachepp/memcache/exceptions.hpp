@@ -5,8 +5,8 @@
 // (See accompanying file LICENSE_1_0.txt or copy at
 // http://www.boost.org/LICENSE_1_0.txt)
 
-#ifndef MEMCACHE_DETAIL_EXCEPTIONS_HPP__
-#define MEMCACHE_DETAIL_EXCEPTIONS_HPP__
+#ifndef __MEMCACHE_DETAIL_EXCEPTIONS_HPP__
+#define __MEMCACHE_DETAIL_EXCEPTIONS_HPP__
 
 #include <exception>
 #include <string>
@@ -14,7 +14,7 @@
 #include <memcachepp/memcache/tags.hpp>
 #include <boost/lexical_cast.hpp>
 
-namespace memcache { 
+namespace memcache {
 
     using std::runtime_error;
     using std::string;
@@ -37,7 +37,7 @@ namespace memcache {
     struct malformed_data : exception {
         explicit malformed_data (string const & data) :
             exception((string("Malformed data: ") + data).c_str()) { };
-            
+
         ~malformed_data() throw () { }
     };
 
@@ -53,10 +53,10 @@ namespace memcache {
             exception("No available servers.") { };
         ~no_available_servers() throw () { }
     };
-    
+
     struct offset_out_of_bounds : exception {
         explicit offset_out_of_bounds (size_t offset) :
-            exception((string("Offset out of bounds: ") + 
+            exception((string("Offset out of bounds: ") +
                 lexical_cast<string>(offset)).c_str()) { };
 
         ~offset_out_of_bounds() throw () { }
@@ -86,4 +86,4 @@ namespace memcache {
 
 } // namespace memcache
 
-#endif // MEMCACHE_DETAIL_EXCEPTIONS_HPP__
+#endif // __MEMCACHE_DETAIL_EXCEPTIONS_HPP__

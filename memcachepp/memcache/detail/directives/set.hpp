@@ -16,22 +16,22 @@ namespace memcache { namespace detail {
 
     template <typename T>
     struct set_directive {
-		explicit set_directive(std::string const & key, T const & value, boost::uint16_t flags, time_t timeout, time_t failover_timeout) :
+        explicit set_directive(std::string const & key, T const & value, boost::uint16_t flags, time_t timeout, time_t failover_timeout) :
             _key(key), _value(value), _flags(flags), _timeout(timeout), _failover_timeout(failover_timeout) { };
-        
+
         template <typename _T>
         void operator() (_T & handle) const {
             handle.set(
                     handle.hash(
-                        _key, 
+                        _key,
                         handle.pool_count()
-                        ), 
-                    _key, 
-                    _value, 
-                    _timeout, 
-                    _failover_timeout, 
+                        ),
+                    _key,
+                    _value,
+                    _timeout,
+                    _failover_timeout,
                     _flags);
-        }
+        };
 
         private:
 
@@ -45,24 +45,24 @@ namespace memcache { namespace detail {
 } // namespace detail
 
     template <typename T, typename _T>
-	inline detail::set_directive<_T> set(T _key, _T const & value, time_t timeout = 0, boost::uint16_t flags = 0) {
+    inline detail::set_directive<_T> set(T _key, _T const & value, time_t timeout = 0, boost::uint16_t flags = 0) {
         return detail::set_directive<_T>(std::string(_key), value, flags, timeout, timeout);
-    }
+    };
 
     template <typename T, typename _T>
-	inline detail::set_directive<_T> set(T _key, _T const & value, detail::expire_type const & expiration, detail::failover_expire_type const & failover_expiration, boost::uint16_t flags = 0) {
+    inline detail::set_directive<_T> set(T _key, _T const & value, detail::expire_type const & expiration, detail::failover_expire_type const & failover_expiration, boost::uint16_t flags = 0) {
         return detail::set_directive<_T>(std::string(_key), value, flags, expiration.timeout, failover_expiration.timeout);
-    }
+    };
 
     template <typename T, typename _T>
-	inline detail::set_directive<_T> set(T _key, _T const & value, detail::failover_expire_type const & failover_expiration, boost::uint16_t flags = 0) {
+    inline detail::set_directive<_T> set(T _key, _T const & value, detail::failover_expire_type const & failover_expiration, boost::uint16_t flags = 0) {
         return detail::set_directive<_T>(std::string(_key), value, flags, 0, failover_expiration.timeout);
-    }
+    };
 
     template <typename T, typename _T>
-	inline detail::set_directive<_T> set(T _key, _T const & value, detail::failover_expire_type const & failover_expiration, detail::expire_type const & expiration, boost::uint16_t flags = 0) {
+    inline detail::set_directive<_T> set(T _key, _T const & value, detail::failover_expire_type const & failover_expiration, detail::expire_type const & expiration, boost::uint16_t flags = 0) {
         return detail::set_directive<_T>(std::string(_key), value, flags, expiration.timeout, failover_expiration.timeout);
-    }
+    };
 
 } // namespace memcache
 

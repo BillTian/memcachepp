@@ -5,8 +5,8 @@
 // (See accompanying file LICENSE_1_0.txt or copy at
 // http://www.boost.org/LICENSE_1_0.txt)
 
-#ifndef MEMCACHE_DETAIL_DIRECTIVES_RAW_SET_HPP__
-#define MEMCACHE_DETAIL_DIRECTIVES_RAW_SET_HPP__
+#ifndef __MEMCACHE_DETAIL_DIRECTIVES_RAW_SET_HPP__
+#define __MEMCACHE_DETAIL_DIRECTIVES_RAW_SET_HPP__
 
 #include <memcachepp/memcache/detail/expiration.hpp>
 #include <memcachepp/memcache/detail/tags.hpp>
@@ -22,24 +22,24 @@ namespace memcache { namespace detail {
             void operator() (_T & handle) const {
                 handle.set_raw(
                         handle.hash(
-                            _key, 
+                            _key,
                             handle.pool_count()
-                            ), 
-                        _key, 
-                        _value, 
-                        _timeout, 
-                        _failover_timeout, 
+                            ),
+                        _key,
+                        _value,
+                        _timeout,
+                        _failover_timeout,
                         _flags
                         );
-            }
+            };
 
             private:
 
-            mutable std::string _key;
-            mutable std::string _value;
-            mutable boost::uint16_t _flags;
-            mutable time_t _timeout;
-            mutable time_t _failover_timeout;
+            std::string _key;
+            std::string _value;
+            boost::uint16_t _flags;
+            time_t _timeout;
+            time_t _failover_timeout;
         };
 
 } // namespace detail
@@ -47,7 +47,7 @@ namespace memcache { namespace detail {
     template <class T>
     inline detail::raw_set_directive<> raw_set(T _key, std::string const & value, time_t timeout=0, time_t failover_timeout=0, boost::uint16_t flags = 0) {
         return detail::raw_set_directive<>(std::string(_key), value, flags, timeout, failover_timeout);
-    }
+    };
 
     template <class T>
     inline detail::raw_set_directive<> raw_set(T _key, std::string const & value, detail::expire_type const & expiration, boost::uint16_t flags = 0) {
@@ -71,5 +71,5 @@ namespace memcache { namespace detail {
 
 } // namespace memcache
 
-#endif // MEMCACHE_DETAIL_DIRECTIVES_RAW_SET_HPP__
+#endif // __MEMCACHE_DETAIL_DIRECTIVES_RAW_SET_HPP__
 

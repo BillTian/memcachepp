@@ -5,8 +5,8 @@
 // (See accompanying file LICENSE_1_0.txt or copy at
 // http://www.boost.org/LICENSE_1_0.txt)
 
-#ifndef MEMCACHE_DETAIL_DIRECTIVES_DELETE_HPP__
-#define MEMCACHE_DETAIL_DIRECTIVES_DELETE_HPP__
+#ifndef __MEMCACHE_DETAIL_DIRECTIVES_DELETE_HPP__
+#define __MEMCACHE_DETAIL_DIRECTIVES_DELETE_HPP__
 
 namespace memcache { namespace detail {
 
@@ -19,16 +19,16 @@ namespace memcache { namespace detail {
             void operator() (_T & handle) const {
                 handle.delete_(
                         handle.hash(
-                            _key, 
+                            _key,
                             handle.pool_count()
-                            ), 
+                            ),
                         _key
                         );
-            }
+            };
 
             private:
 
-            mutable std::string _key;
+            std::string _key;
         };
 
 } // namespace detail
@@ -36,9 +36,9 @@ namespace memcache { namespace detail {
     template <typename T>
     inline detail::delete_directive<T> delete_(T _key) {
         return detail::delete_directive<T>(std::string(_key));
-    }
+    };
 
 } // namespace memcache
 
-#endif // MEMCACHE_DETAIL_DIRECTIVES_DELETE_HPP__
+#endif // __MEMCACHE_DETAIL_DIRECTIVES_DELETE_HPP__
 

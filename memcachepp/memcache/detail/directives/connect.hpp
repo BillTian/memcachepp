@@ -5,38 +5,33 @@
 // (See accompanying file LICENSE_1_0.txt or copy at
 // http://www.boost.org/LICENSE_1_0.txt)
 
-#ifndef MEMCACHE_DETAIL_DIRECTIVES_CONNECT_HPP__
-#define MEMCACHE_DETAIL_DIRECTIVES_CONNECT_HPP__
+#ifndef __MEMCACHE_DETAIL_DIRECTIVES_CONNECT_HPP__
+#define __MEMCACHE_DETAIL_DIRECTIVES_CONNECT_HPP__
 
-namespace memcache { 
+namespace memcache {
 
-	namespace detail {
-		struct connect_directive;
-	}
+    namespace helper {
+        struct connect_directive;
+    };
 
-	detail::connect_directive connect(boost::uint64_t timeout);
+    helper::connect_directive connect(helper::connect_directive);
 
-	namespace detail {
-		struct connect_directive {
-			connect_directive(boost::uint64_t timeout) : timeout_(timeout) { };
-            
-            template <class Handle>
-            void operator()(Handle & handle) const {
-                handle.connect( timeout_ );
-            }
-            
+    namespace helper {
+        struct connect_directive {
         private:
-            boost::uint64_t timeout_;
-		};
-	}
-    
-    typedef detail::connect_directive (*connect_directive_t)(boost::uint64_t);
+            connect_directive() { };
+            connect_directive(const connect_directive &) { };
+            friend connect_directive memcache::connect(connect_directive);
+        };
+    };
 
-	inline detail::connect_directive connect(boost::uint64_t timeout = MEMCACHE_TIMEOUT) {
-		return detail::connect_directive(timeout);
-	}
+    typedef helper::connect_directive (*connect_directive_t)(helper::connect_directive);
+
+    inline helper::connect_directive connect(helper::connect_directive) {
+        return helper::connect_directive();
+    };
 
 } // namespace memcache
 
-#endif // MEMCACHE_DETAIL_DIRECTIVES_CONNECT_HPP__
+#endif // __MEMCACHE_DETAIL_DIRECTIVES_CONNECT_HPP__
 

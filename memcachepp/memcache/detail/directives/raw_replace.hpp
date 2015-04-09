@@ -19,16 +19,16 @@ namespace memcache {
             void operator() (Handle & handle) const {
                 handle.replace_raw(
                         handle.hash(
-                            key, 
+                            key,
                             handle.pool_count()
-                            ), 
-                        key, 
-                        value, 
-                        timeout, 
-                        failover_timeout, 
+                            ),
+                        key,
+                        value,
+                        timeout,
+                        failover_timeout,
                         flags
                         );
-            }
+            };
 
             private:
 
@@ -43,7 +43,7 @@ namespace memcache {
     template <typename T>
     inline detail::raw_replace_directive<> raw_replace(T _key, std::string const & value, time_t timeout=0, boost::uint16_t flags = 0) {
         return detail::raw_replace_directive<>(std::string(_key), std::string(value), flags, timeout, timeout);
-    }
+    };
 
 } // namespace memcache
 

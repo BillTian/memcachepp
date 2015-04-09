@@ -5,8 +5,8 @@
 // (See accompanying file LICENSE_1_0.txt or copy at
 // http://www.boost.org/LICENSE_1_0.txt)
 
-#ifndef MEMCACHE_DETAIL_DESERIALIZER_HPP__
-#define MEMCACHE_DETAIL_DESERIALIZER_HPP__
+#ifndef __MEMCACHE_DETAIL_DESERIALIZER_HPP__
+#define __MEMCACHE_DETAIL_DESERIALIZER_HPP__
 
 #include <string>
 #include <sstream>
@@ -17,10 +17,10 @@ namespace memcache { namespace detail {
     template <typename T, class data_interchange_policy>
     struct deserializer {
         T & _holder;
-        
+
         explicit deserializer(T & holder) :
             _holder(holder) { };
-            
+
         void operator() (std::string const & data) const {
             std::stringbuf byte_string_buffer(data);
             std::istream byte_buffer_stream(&byte_string_buffer);
@@ -33,5 +33,5 @@ namespace memcache { namespace detail {
 
 } // namespace memcache
 
-#endif // MEMCACHE_DETAIL_DESERIALIZER_HPP__
+#endif // __MEMCACHE_DETAIL_DESERIALIZER_HPP__
 

@@ -11,6 +11,7 @@
 #include <vector>
 #include <algorithm>
 #include <utility>
+#include <boost/regex.hpp>
 #include <boost/lexical_cast.hpp>
 #include <boost/algorithm/string/trim.hpp>
 #include <boost/algorithm/string/classification.hpp>
@@ -25,7 +26,6 @@
 #include <boost/cstdint.hpp>
 #include <boost/fusion/tuple.hpp>
 #include <boost/fusion/adapted/std_pair.hpp>
-#include <boost/regex.hpp>
 
 namespace memcache {
 
@@ -46,23 +46,23 @@ namespace memcache {
     using std::make_pair;
     using boost::system::error_code;
     using boost::system::system_error;
-    using boost::fusion::tuple;
-    using boost::fusion::make_tuple;
+    //using boost::fusion::tuple;
+    //using boost::fusion::make_tuple;
     using boost::fusion::ignore;
-    
+
     template <
-        class threading_policy = policies::default_threading<>, 
+        class threading_policy = policies::default_threading<>,
         class data_interchange_policy = policies::binary_interchange<>,
         class hash_policy = policies::default_hash<>
     >
-    struct basic_handle : 
-        threading_policy, 
-        data_interchange_policy, 
+    struct basic_handle :
+        threading_policy,
+        data_interchange_policy,
         hash_policy
     {
 
         typedef boost::shared_ptr<boost::asio::ip::tcp::socket> connection_ptr;
-        
+
         struct server_info {
             bool connected;
             string host, port;
@@ -82,16 +82,16 @@ namespace memcache {
 
         typedef map<string, server_info> server_container;
         typedef map<string, pool_info> pool_container;
-        
-        basic_handle() : 
-            threading_policy(), 
-            data_interchange_policy(), 
-            hash_policy() 
+
+        basic_handle() :
+            threading_policy(),
+            data_interchange_policy(),
+            hash_policy()
             { };
-        
-        void connect(boost::uint64_t timeout = MEMCACHE_TIMEOUT) { 
+
+        void connect() {
             typename threading_policy::lock scoped_lock(*this);
-            for_each(servers.begin(), servers.end(), connect_impl(service_, timeout));
+            for_each(servers.begin(), servers.end(), connect_impl(service_));
         };
 
         template <typename T> // T must be serializable
@@ -104,17 +104,17 @@ namespace memcache {
 
             if (!perform_action(
                         add_impl<T, data_interchange_policy>(
-                            key, 
-                            value, 
-                            expiration, 
-                            failover_expiration, 
+                            key,
+                            value,
+                            expiration,
+                            failover_expiration,
                             flags,
                             rehash
                             ),
                         connections
                         )
                ) throw key_not_stored(key);
-        }
+        };
 
         void add_raw(size_t offset, string const & key, string const & value, time_t expiration, time_t failover_expiration, boost::uint16_t flags = 0) {
             typename threading_policy::lock scoped_lock(*this);
@@ -126,11 +126,11 @@ namespace memcache {
 
             if (!perform_action(
                         add_impl<string, policies::string_preserve>(
-                            key, 
-                            value, 
-                            expiration, 
-                            failover_expiration, 
-                            flags, 
+                            key,
+                            value,
+                            expiration,
+                            failover_expiration,
+                            flags,
                             rehash
                             ),
                         connections
@@ -148,17 +148,17 @@ namespace memcache {
 
             if (!perform_action(
                         replace_impl<T, data_interchange_policy>(
-                            key, 
-                            value, 
-                            expiration, 
-                            failover_expiration, 
+                            key,
+                            value,
+                            expiration,
+                            failover_expiration,
                             flags,
                             rehash
                             ),
                         connections
                         )
                ) throw key_not_stored(key);
-        }
+        };
 
         void replace_raw(size_t offset, string const & key, string const & value, time_t expiration, time_t failover_expiration, boost::uint16_t flags = 0) {
             typename threading_policy::lock scoped_lock(*this);
@@ -170,11 +170,11 @@ namespace memcache {
 
             if (!perform_action(
                         replace_impl<string, policies::string_preserve>(
-                            key, 
-                            value, 
-                            expiration, 
-                            failover_expiration, 
-                            flags, 
+                            key,
+                            value,
+                            expiration,
+                            failover_expiration,
+                            flags,
                             rehash
                             ),
                         connections
@@ -192,40 +192,17 @@ namespace memcache {
 
             if (!perform_action(
                         set_impl<T, data_interchange_policy>(
-                            key, 
-                            value, 
-                            expiration, 
-                            failover_expiration, 
-                            flags,
-                            rehash
-                            ),
-                        connections
-                        )
-               ) throw key_not_stored(key);
-        }
-        
-        template <typename T> // T must be serializable
-        void check_and_set(size_t offset, string const & key, T const & value, boost::uint64_t cas_value, time_t expiration, time_t failover_expiration, boost::uint16_t flags = 0) {
-            typename threading_policy::lock scoped_lock(*this);
-            validate(key);
-            connection_container connections;
-            bool rehash;
-            boost::fusion::tie(connections, rehash) = command_setup(offset);
-
-            if (!perform_action(
-                        check_and_set_impl<T, data_interchange_policy>(
-                            key, 
+                            key,
                             value,
-                            cas_value, 
-                            expiration, 
-                            failover_expiration, 
+                            expiration,
+                            failover_expiration,
                             flags,
                             rehash
                             ),
                         connections
                         )
                ) throw key_not_stored(key);
-        }
+        };
 
         void set_raw(size_t offset, string const & key, string const & value, time_t expiration, time_t failover_expiration, boost::uint16_t flags = 0) {
             typename threading_policy::lock scoped_lock(*this);
@@ -237,11 +214,11 @@ namespace memcache {
 
             if (!perform_action(
                         set_impl<string, policies::string_preserve>(
-                            key, 
-                            value, 
-                            expiration, 
-                            failover_expiration, 
-                            flags, 
+                            key,
+                            value,
+                            expiration,
+                            failover_expiration,
+                            flags,
                             rehash
                             ),
                         connections
@@ -259,11 +236,11 @@ namespace memcache {
 
             if (!perform_action(
                         append_impl<string, policies::string_preserve>(
-                            key, 
-                            value, 
-                            expiration, 
-                            failover_expiration, 
-                            flags, 
+                            key,
+                            value,
+                            expiration,
+                            failover_expiration,
+                            flags,
                             rehash
                             ),
                         connections
@@ -281,11 +258,11 @@ namespace memcache {
 
             if (!perform_action(
                         prepend_impl<string, policies::string_preserve>(
-                            key, 
-                            value, 
-                            expiration, 
-                            failover_expiration, 
-                            flags, 
+                            key,
+                            value,
+                            expiration,
+                            failover_expiration,
+                            flags,
                             rehash
                             ),
                         connections
@@ -303,7 +280,7 @@ namespace memcache {
 
             if (!perform_action(
                     delete_impl(
-                        key, 
+                        key,
                         delay
                         ),
                     connections
@@ -346,7 +323,7 @@ namespace memcache {
                         )
                ) throw key_not_found(key);
         }
-        
+
         string version(size_t offset = 0) {
             typename threading_policy::lock scoped_lock(*this);
             if (pools.empty())
@@ -375,22 +352,9 @@ namespace memcache {
             connection_container connections;
             boost::fusion::tie(connections, ignore) = command_setup(offset);
 
-            boost::uint64_t cas_value;
-            if (retrieve(get_impl<T, data_interchange_policy>(key, holder, cas_value), connections))
+            if (retrieve(get_impl<T, data_interchange_policy>(key, holder), connections))
                 throw key_not_found(key);
-        }
-
-        template <typename T> // T must be serializable
-        void gets(size_t offset, string const & key, T & holder, boost::uint64_t & cas_value) {
-            typename threading_policy::lock scoped_lock(*this);
-            validate(key);
-
-            connection_container connections;
-            boost::fusion::tie(connections, ignore) = command_setup(offset);
-
-            if (retrieve(gets_impl<T, data_interchange_policy>(key, holder, cas_value), connections))
-                throw key_not_found(key);
-        }
+        };
 
         void get_raw(size_t offset, string const & key, string & holder) {
             typename threading_policy::lock scoped_lock(*this);
@@ -399,20 +363,19 @@ namespace memcache {
             connection_container connections;
             boost::fusion::tie(connections, ignore) = command_setup(offset);
 
-            boost::uint64_t cas_value = 0u;
-            if (retrieve(get_impl<string, policies::string_preserve>(key, holder, cas_value), connections))
+            if (retrieve(get_impl<string, policies::string_preserve>(key, holder), connections))
                 throw key_not_found(key);
         };
 
-        bool is_connected(string const & server_name) { 
+        bool is_connected(string const & server_name) {
             typename threading_policy::lock scoped_lock(*this);
             typename server_container::const_iterator iterator = servers.find(server_name);
             if (iterator == servers.end())
                 return false;
             return iterator->second.connected;
         };
-        
-        ~basic_handle() { 
+
+        ~basic_handle() {
             typename threading_policy::lock scoped_lock(*this);
             pool_container().swap(pools);
             server_container().swap(servers);
@@ -442,19 +405,19 @@ namespace memcache {
         };
 
         private:
-        
+
         server_container servers;
         pool_container pools;
 
-        typedef boost::function<void(string const &)> 
+        typedef boost::function<void(string const &)>
             callback_type;
-        
-        typedef map<string, callback_type> 
+
+        typedef map<string, callback_type>
             callback_map;
 
         typedef vector<typename server_container::iterator> connection_container;
 
-        tuple<connection_container, bool> command_setup(size_t offset) {
+        boost::fusion::tuple<connection_container, bool> command_setup(size_t offset) {
             if (offset > pools.size())
                 throw offset_out_of_bounds(offset);
 
@@ -462,7 +425,7 @@ namespace memcache {
             bool rehash;
             boost::fusion::tie(connections, rehash) = get_connections(offset);
 
-            return make_tuple(connections, rehash);
+            return boost::fusion::make_tuple(connections, rehash);
         }
 
         template <class Action, class ConnectionContainer>
@@ -477,8 +440,8 @@ namespace memcache {
                 if (connections.size() ==
                         static_cast<size_t>(
                             accumulate(
-                                errors.begin(), 
-                                errors.end(), 
+                                errors.begin(),
+                                errors.end(),
                                 0
                             )
                         )
@@ -490,19 +453,19 @@ namespace memcache {
 
         template <class Predicate, class ConnectionContainer>
             bool retrieve(Predicate getter, ConnectionContainer & connections) {
-                typename connection_container::iterator 
-                    connection_iterator = 
+                typename connection_container::iterator
+                    connection_iterator =
                         connections.begin(),
                     connections_end =
                         connections.end();
 
                 connection_iterator =
                     find_if(connection_iterator, connections_end, getter);
-                
+
                 return connection_iterator == connections_end;
             }
 
-        inline tuple <connection_container, bool> get_connections(size_t offset) {
+        inline boost::fusion::tuple <connection_container, bool> get_connections(size_t offset) {
             typename pool_container::iterator pool_iterator = pools.begin();
             assert((offset < pools.size()) && "Offset out of bounds");
             advance(pool_iterator, offset);
@@ -531,7 +494,7 @@ namespace memcache {
                     if (server_iterator->second.connected)
                         connections.push_back(server_iterator);
                 };
-                
+
                 while (connections.empty()) {
                     rehash = true;
                     ++pool_iterator;
@@ -549,8 +512,8 @@ namespace memcache {
                     };
                 };
             };
-            
-            return make_tuple(connections, rehash);
+
+            return boost::fusion::make_tuple(connections, rehash);
         };
 
         boost::asio::io_service service_;
@@ -558,7 +521,7 @@ namespace memcache {
         template <class T>
             struct storage_base {
                 string command;
-                
+
                 template <typename value_type>
                     int operator() (value_type & server_iterator) {
                         static boost::regex eol_regex("\r\n");
@@ -593,13 +556,13 @@ namespace memcache {
                             return 0; // indicate NO error
 
                         return 1;
-                    }
+                    };
             };
 
         template <typename T, typename set_interchange_policy>
             struct set_impl : storage_base<T> {
-                explicit set_impl(string const & key, T const & value, time_t expiration, time_t failover_expiration, boost::uint16_t flags, bool rehash) 
-                    { 
+                explicit set_impl(string const & key, T const & value, time_t expiration, time_t failover_expiration, boost::uint16_t flags, bool rehash)
+                    {
                         ostringstream output_bytes_stream;
                         typename set_interchange_policy::oarchive archive(output_bytes_stream);
                         archive << value;
@@ -611,27 +574,7 @@ namespace memcache {
                             << output_bytes_stream.str() << "\r\n";
                         storage_base<T>::command = command_stream.str();
                     };
-                
-            };
 
-        template <typename T, typename set_interchange_policy>
-            struct check_and_set_impl : storage_base<T> {
-                explicit check_and_set_impl(string const & key, T const & value, boost::uint64_t cas_value, time_t expiration, time_t failover_expiration, boost::uint16_t flags, bool rehash) 
-                    { 
-                        ostringstream output_bytes_stream;
-                        typename set_interchange_policy::oarchive archive(output_bytes_stream);
-                        archive << value;
-
-                        ostringstream command_stream;
-                        command_stream << "cas " << key << " " << flags
-                            << " " << (rehash ? failover_expiration : expiration)
-                            << " " << output_bytes_stream.str().size() 
-                            << " " << cas_value
-                            << "\r\n"
-                            << output_bytes_stream.str() << "\r\n";
-                        storage_base<T>::command = command_stream.str();
-                    };
-                
             };
 
         template <class T, class set_interchange_policy>
@@ -700,19 +643,20 @@ namespace memcache {
             };
 
         template <typename holder_type, class get_interchange_policy>
-        struct get_base {
+            struct get_impl {
                 string _key;
                 holder_type & _holder;
-                boost::uint64_t & cas_value;
                 string command;
-
-                get_base(string const & key, holder_type & holder, boost::uint64_t & cas_value)
-                : _key(key), _holder(holder), cas_value(cas_value)
-                {
-                }
+                explicit get_impl(string const & key, holder_type & holder)
+                    : _key(key), _holder(holder)
+                    {
+                        ostringstream command_stream;
+                        command_stream << "get " << key << "\r\n";
+                        command = command_stream.str();
+                    };
 
                 template <typename T>
-                   bool operator() (T & server_iterator) {
+                    bool operator() (T & server_iterator) {
                         static boost::regex end_indicator("(END\r\n)|(SERVER_ERROR\\S)|(CLIENT_ERROR\\S)|(ERROR\r\n)");
                         boost::asio::streambuf buffer;
                         connection_ptr connection = server_iterator->second.connection;
@@ -723,8 +667,8 @@ namespace memcache {
                                 );
 #ifdef _REENTRANT
                             detail::read_handler handler_instance(
-                                    *connection, 
-                                    buffer, 
+                                    *connection,
+                                    buffer,
                                     end_indicator,
                                     MEMCACHE_TIMEOUT
                                     );
@@ -743,10 +687,10 @@ namespace memcache {
                         };
 
                         istream response(&buffer);
-                        
+
                         callback_map callbacks;
                         callbacks[_key] = detail::deserializer<holder_type, get_interchange_policy>(_holder);
-                        
+
                         ostringstream data;
                         string line;
                         while (getline(response, line)) {
@@ -757,13 +701,13 @@ namespace memcache {
                         string data_string(data.str());
 
                         try {
-                            if (!detail::parse_response(data_string, callbacks, cas_value)) {
+                            if (!detail::parse_response(data_string, callbacks)) {
                                 istringstream tokenizer(data_string);
                                 string first_token;
                                 tokenizer >> first_token;
                                 if (first_token == "END")
                                     return false; // wasn't able to get it
-                                if ((first_token == "ERROR") || 
+                                if ((first_token == "ERROR") ||
                                     (first_token == "CLIENT_ERROR") ||
                                     (first_token == "SERVER_ERROR"))
                                     throw invalid_response_found(data_string);
@@ -776,31 +720,8 @@ namespace memcache {
                         };
 
                         return true;
-                    }
-        };
-        
-        template <typename holder_type, class get_interchange_policy>
-            struct get_impl : get_base<holder_type, get_interchange_policy> {
-                explicit get_impl(string const & key, holder_type & holder, boost::uint64_t & cas_value)
-                    : get_base<holder_type, get_interchange_policy>(key, holder, cas_value)
-                    {
-                        ostringstream command_stream;
-                        command_stream << "get " << key << "\r\n";
-                        get_base<holder_type, get_interchange_policy>::command = command_stream.str();
                     };
-                
                 };
-
-        template <typename holder_type, class get_interchange_policy>
-            struct gets_impl : get_base<holder_type, get_interchange_policy> {
-                explicit gets_impl(string const & key, holder_type & holder, boost::uint64_t & cas_value)
-                : get_base<holder_type, get_interchange_policy>(key, holder, cas_value)
-                {
-                    ostringstream command_stream;
-                    command_stream << "gets " << key << "\r\n";
-                    get_base<holder_type, get_interchange_policy>::command = command_stream.str();
-                }
-            };
 
         struct crement_base {
             boost::uint64_t & holder;
@@ -822,8 +743,8 @@ namespace memcache {
                                 );
 #ifdef _REENTRANT
                         detail::read_handler handler_instance(
-                                *connection, 
-                                buffer, 
+                                *connection,
+                                buffer,
                                 eol_regex,
                                 MEMCACHE_TIMEOUT
                                 );
@@ -923,7 +844,7 @@ namespace memcache {
                     return 1;
                 }
         };
-        
+
         struct delete_impl {
             string command;
             explicit delete_impl(string const & key, time_t delay)
@@ -966,14 +887,14 @@ namespace memcache {
                         return 0; // indicate success
                     istringstream tokenizer(line);
                     string first_token;
-                    tokenizer >> first_token;    
-                    if ((first_token == "ERROR") || 
+                    tokenizer >> first_token;
+                    if ((first_token == "ERROR") ||
                         (first_token == "CLIENT_ERROR") ||
                         (first_token == "SERVER_ERROR"))
                         return 1; // indicate error
 
                     return 1; // indicate error
-                }
+                };
         };
 
         void send_command(string const & command, boost::asio::ip::tcp::socket & socket) const {
@@ -982,18 +903,15 @@ namespace memcache {
                     sizeof(char) * command.size())
                 );
         };
-        
-        struct connect_impl {
 
-            explicit connect_impl(boost::asio::io_service & service, boost::uint64_t timeout) :
-                service_(service),
-                timeout_(timeout) { };
-            
+        struct connect_impl {
+            explicit connect_impl(boost::asio::io_service & service) :
+                service_(service) { };
+
             boost::asio::io_service & service_;
-            boost::uint64_t timeout_;
 
             template <class IoService, class Element>
-                pair<connection_ptr,error_code> 
+                pair<connection_ptr,error_code>
                 connect(IoService & service_, Element const & element) const {
                     using boost::asio::ip::tcp;
                     using boost::optional;
@@ -1008,7 +926,7 @@ namespace memcache {
                             );
                     tcp::resolver resolver(service_);
                     tcp::resolver::query query(element.second.host, element.second.port, tcp::resolver::query::numeric_service);
-                    tcp::resolver::iterator 
+                    tcp::resolver::iterator
                         endpoint_iterator = resolver.resolve(query),
                         end;
                     error_code error = host_not_found;
@@ -1016,9 +934,9 @@ namespace memcache {
                         optional<error_code> timer_result;
                         optional<error_code> connect_result;
                         deadline_timer _timer(
-                            new_connection->io_service()
+                            new_connection->get_io_service()
                         );
-                        
+
                         new_connection->close();
                         new_connection->async_connect(
                                 *endpoint_iterator++,
@@ -1029,18 +947,18 @@ namespace memcache {
                                     )
                                 );
                         _timer.expires_from_now(
-                                milliseconds(timeout_)
+                                milliseconds(MEMCACHE_TIMEOUT)
                                 );
                         _timer.async_wait(
                                 bind(
                                     &optional<error_code>::reset,
-                                    &timer_result, 
+                                    &timer_result,
                                     _1)
                                 );
-                        
-                        new_connection->io_service().reset();
 
-                        while (new_connection->io_service().run_one()) {
+                        new_connection->get_io_service().reset();
+
+                        while (new_connection->get_io_service().run_one()) {
                             if (connect_result) {
                                 _timer.cancel();
                                 error = *connect_result;
@@ -1057,13 +975,13 @@ namespace memcache {
 
             void operator() (typename server_container::value_type & element) {
                 if (element.second.connected) return; // skip connected servers
-                
+
                 try {
                     connection_ptr new_connection;
                     error_code error;
-                    
+
                     boost::fusion::tie(new_connection, error) = connect(service_, element);
-                    
+
                     if (error) {
                         element.second.connected = false;
                         element.second.error = error;
@@ -1093,13 +1011,13 @@ namespace memcache {
     inline basic_handle<threading_policy, data_interchange_policy, hash_policy> & operator<< (basic_handle<threading_policy, data_interchange_policy, hash_policy> & _handle, directive_type const & directive) {
         directive(_handle);
         return _handle;
-    }
-    
+    };
+
     template <typename threading_policy, class data_interchange_policy, class hash_policy>
     inline basic_handle<threading_policy, data_interchange_policy, hash_policy> & operator<< (basic_handle<threading_policy, data_interchange_policy, hash_policy> & _handle, connect_directive_t) {
         _handle.connect();
         return _handle;
-    }
+    };
 
 } // namespace memcache
 

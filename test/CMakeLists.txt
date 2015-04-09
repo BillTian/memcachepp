@@ -1,8 +1,8 @@
 include_directories(${MEMCACHEPP_SOURCE_DIR})
-find_package( Boost 1.41.0 COMPONENTS unit_test_framework system regex date_time thread serialization )
-set(Boost_USE_STATIC_LIBS ON)
+find_package( Boost 1.41.0 COMPONENTS unit_test_framework system regex date_time thread serialization chrono )
+set(Boost_USE_STATIC_LIBS OFF)
 set(Boost_USE_MULTITHREADED ON)
-find_package(Threads)
+#find_package(Threads)
 
 if (Boost_FOUND)
     add_definitions( -D_REENTRANT )

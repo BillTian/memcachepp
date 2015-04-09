@@ -19,16 +19,16 @@ namespace memcache {
             void operator() (Handle & handle) const {
                 handle.prepend_raw(
                         handle.hash(
-                            key, 
+                            key,
                             handle.pool_count()
-                            ), 
-                        key, 
-                        value, 
-                        timeout, 
-                        failover_timeout, 
+                            ),
+                        key,
+                        value,
+                        timeout,
+                        failover_timeout,
                         flags
                         );
-            }
+            };
 
             private:
 

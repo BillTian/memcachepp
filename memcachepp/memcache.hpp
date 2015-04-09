@@ -43,7 +43,7 @@
 #include <boost/fusion/tuple.hpp>
 
 namespace memcache {
-    
+
 #ifndef _REENTRANT
     typedef basic_handle<> handle ;
     typedef basic_request<> request ;

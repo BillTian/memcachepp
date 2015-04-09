@@ -17,7 +17,7 @@ namespace memcache {
         typedef basic_handle<threading_policy, data_interchange_policy, hash_policy> handle_type;
         typedef typename handle_type::server_container server_container;
         typedef typename handle_type::pool_container pool_container;
-        
+
         explicit basic_request (handle_type & handle) :
             threading_policy(), data_interchange_policy(), hash_policy(),
             _handle(handle) { };
@@ -30,10 +30,10 @@ namespace memcache {
                     (key, detail::deserializer<T, data_interchange_policy>(holder))
                 );
             key_hash[hash].insert(key);
-        }
+        };
 
         void perform() {
-            std::for_each(key_hash.begin(), key_hash.end(), 
+            std::for_each(key_hash.begin(), key_hash.end(),
                 boost::bind(&basic_request<threading_policy, data_interchange_policy>::perform_impl, this, _1));
         };
 
@@ -45,26 +45,26 @@ namespace memcache {
 
         handle_type & _handle;
 
-        typedef boost::function<void(std::string const &)> 
+        typedef boost::function<void(std::string const &)>
             callback_type;
-        
-        typedef std::map<std::string, callback_type> 
+
+        typedef std::map<std::string, callback_type>
             callback_map;
 
-        mutable key_hash_map key_hash;
-        mutable callback_map callbacks;
+        key_hash_map key_hash;
+        callback_map callbacks;
 
         void perform_impl(typename key_hash_map::value_type const & element) {
             typename threading_policy::lock scoped_lock(*this);
 
-            std::for_each(element.second.begin(), element.second.end(), 
+            std::for_each(element.second.begin(), element.second.end(),
                 boost::bind(
-                    &basic_request<threading_policy, data_interchange_policy>::validate, 
-                    this, 
+                    &basic_request<threading_policy, data_interchange_policy>::validate,
+                    this,
                     _1
                     )
                 );
-            
+
             size_t offset = element.first;
             if (offset > _handle.servers.size())
                 throw offset_out_of_bounds(element.first);
@@ -72,13 +72,13 @@ namespace memcache {
             typename handle_type::connection_container connections;
             bool rehash;
             boost::fusion::tie(connections, rehash) = _handle.get_connections(offset);
-            
+
             typename handle_type::connection_container::iterator
                 server_iterator_iterator = connections.begin();
 
             typename handle_type::connection_container::value_type
                 server_iterator = *(connections.begin());
-            
+
             while (server_iterator != _handle.servers.end()) {
                 if (server_iterator->second.connected) {
                     std::ostringstream command_stream;
@@ -87,7 +87,7 @@ namespace memcache {
                         std::ostream_iterator<std::string>(command_stream, " "));
                     // remove the last space
                     command_stream << "\r\n";
-                    
+
                     boost::asio::streambuf buffer;
                     typename handle_type::connection_ptr connection
                         = server_iterator->second.connection;
@@ -118,11 +118,11 @@ namespace memcache {
                             continue; // try the next iterator
                         };
                     };
-                    
+
                     std::istream response_stream(&buffer);
                     std::string line;
                     std::ostringstream data;
-                    
+
                     while (getline(response_stream, line)) {
                         if (response_stream.eof()) break;
                         data << line << '\n';
@@ -131,8 +131,7 @@ namespace memcache {
                     std::string data_string = data.str();
 
                     try {
-                        boost::uint64_t cas_value = 0u;
-                        if (!detail::parse_response(data_string, callbacks, cas_value)) {
+                        if (!detail::parse_response(data_string, callbacks)) {
                             std::istringstream tokenizer(data_string);
                             std::string first_token;
                             tokenizer >> first_token;
@@ -153,7 +152,7 @@ namespace memcache {
                 };
                 ++server_iterator;
             };
-            
+
         };
 
         void validate(std::string const & key) const {
@@ -168,13 +167,13 @@ namespace memcache {
     inline basic_request<threading_policy, data_interchange_policy, hash_policy> & operator<< (basic_request<threading_policy, data_interchange_policy, hash_policy> & _request, directive_type const & directive) {
         directive(_request);
         return _request;
-    }
+    };
 
     template <typename threading_policy, class data_interchange_policy, class hash_policy>
     inline basic_request<threading_policy, data_interchange_policy, hash_policy> & operator<< (basic_request<threading_policy, data_interchange_policy, hash_policy> & _request, commit_directive_t) {
         _request.perform();
         return _request;
-    }
+    };
 
 } // namespace memcache
 

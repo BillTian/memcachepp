@@ -5,8 +5,8 @@
 // (See accompanying file LICENSE_1_0.txt or copy at
 // http://www.boost.org/LICENSE_1_0.txt)
 
-#ifndef MEMCACHE_POLICIES_BINARY_INTERCHANGE_HPP__
-#define MEMCACHE_POLICIES_BINARY_INTERCHANGE_HPP__
+#ifndef __MEMCACHE_POLICIES_BINARY_INTERCHANGE_HPP__
+#define __MEMCACHE_POLICIES_BINARY_INTERCHANGE_HPP__
 
 #include <memcachepp/memcache/policies/tags.hpp>
 #include <boost/archive/binary_iarchive.hpp>
@@ -23,9 +23,9 @@ namespace memcache { namespace policies {
         typedef boost::archive::archive_exception archive_exception;
         protected: ~binary_interchange() { };
     };
-        
+
 } // namespace policies
 
 } // namespace memcache
 
-#endif // MEMCACHE_POLICIES_BINARY_INTERCHANGE_HPP__
+#endif // __MEMCACHE_POLICIES_BINARY_INTERCHANGE_HPP__
