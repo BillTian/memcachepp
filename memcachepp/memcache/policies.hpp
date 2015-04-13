@@ -12,6 +12,7 @@
 #include <memcachepp/memcache/policies/default_threading.hpp>
 #include <memcachepp/memcache/policies/boost_threading.hpp>
 #include <memcachepp/memcache/policies/default_hash.hpp>
+#include <memcachepp/memcache/policies/ketama_hash.hpp>
 #include <memcachepp/memcache/policies/binary_interchange.hpp>
 #include <memcachepp/memcache/policies/text_interchange.hpp>
 #include <memcachepp/memcache/policies/string_preserve.hpp>

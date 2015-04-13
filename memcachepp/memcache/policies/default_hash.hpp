@@ -14,6 +14,10 @@ namespace memcache { namespace policies {
 
     template <class tag = tags::default_tag>
     struct default_hash {
+        template <class handle_type>
+        void init_hash(handle_type & handle) {}
+        template <class handle_type>
+        void update_hash(handle_type & handle) {}
         size_t hash(std::string const & key, size_t server_count) const {
             assert(server_count != 0);
             boost::crc_32_type crc32_computer;

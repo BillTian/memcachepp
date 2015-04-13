@@ -66,6 +66,7 @@ namespace memcache {
         struct server_info {
             bool connected;
             string host, port;
+            size_t index; // pool index
             error_code error;
             connection_ptr connection;
         };
@@ -92,6 +93,7 @@ namespace memcache {
         void connect() {
             typename threading_policy::lock scoped_lock(*this);
             for_each(servers.begin(), servers.end(), connect_impl(service_));
+            hash_policy::init_hash(*this);
         };
 
         template <typename T> // T must be serializable
@@ -406,6 +408,7 @@ namespace memcache {
 
         private:
 
+        friend hash_policy;
         server_container servers;
         pool_container pools;
 

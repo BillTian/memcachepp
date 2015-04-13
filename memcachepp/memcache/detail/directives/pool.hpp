@@ -33,7 +33,7 @@ namespace memcache { namespace detail {
                 template <typename T>
                     void operator() (T const & element) const {
                         typename handle_type::server_info s_info
-                            = { false, element._server_name, element._port };
+                            = { false, element._server_name, element._port, _handle.pool_count() };
 
                         std::string servername = (element._server_name + ':') + element._port;
                         _servers.insert(servername);

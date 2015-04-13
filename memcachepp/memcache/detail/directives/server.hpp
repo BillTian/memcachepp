@@ -21,7 +21,7 @@ namespace memcache { namespace detail {
             template <typename T>
             void operator() (T & handle) const {
                 typename T::server_info s_info
-                    = { false, _server_name, _port };
+                    = { false, _server_name, _port, handle.pool_count() };
 
                 typename T::pool_info p_info
                     = { 0, typename T::pool_info::member_container() };
