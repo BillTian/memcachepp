@@ -61,6 +61,7 @@ namespace memcache {
         data_interchange_policy,
         hash_policy
     {
+        BOOST_MOVABLE_BUT_NOT_COPYABLE(basic_handle)
 
         typedef boost::shared_ptr<boost::asio::ip::tcp::socket> connection_ptr;
 
@@ -90,6 +91,8 @@ namespace memcache {
             data_interchange_policy(),
             hash_policy()
             { };
+        basic_handle(BOOST_RV_REF(basic_handle)) {}
+        basic_handle& operator=(BOOST_RV_REF(basic_handle)) { return *this; }
 
         void connect() {
             typename threading_policy::lock scoped_lock(*this);
