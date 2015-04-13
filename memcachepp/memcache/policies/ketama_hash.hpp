@@ -10,6 +10,7 @@
 #ifdef _MEMCACHE_SUPPORT_KETAMA
 #include <openssl/md5.h>
 #include <fstream>
+#include <memcachepp/memcache/detail/handle_access.hpp>
 
 namespace memcache {
     namespace impl {
@@ -71,7 +72,8 @@ namespace memcache {
 
             template <class handle_type>
             void init_hash(handle_type & handle) {
-                for_each(handle.servers.begin(), handle.servers.end(),
+                typename traits::access<handle_type, 0>::server_type &server = traits::access<handle_type, 0>::get(handle);
+                for_each(server.begin(), server.end(),
                     memcache::impl::server_hash_cacl(items_));
                 std::sort(items_.begin(), items_.end(), memcache::impl::offset_value_less());
             }

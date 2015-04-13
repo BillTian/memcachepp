@@ -10,6 +10,7 @@
 
 #include <boost/asio.hpp>
 #include <boost/bind.hpp>
+#include <boost/regex.hpp>
 #include <boost/optional.hpp>
 #include <memcachepp/memcache/tags.hpp>
 

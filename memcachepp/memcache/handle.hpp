@@ -26,6 +26,7 @@
 #include <boost/cstdint.hpp>
 #include <boost/fusion/tuple.hpp>
 #include <boost/fusion/adapted/std_pair.hpp>
+#include <memcachepp/memcache/detail/handle_access.hpp>
 
 namespace memcache {
 
@@ -408,7 +409,9 @@ namespace memcache {
 
         private:
 
-        friend hash_policy;
+        //typedef traits::access< basic_handle<threading_policy, data_interchange_policy, hash_policy>, 0> service_access;
+        //friend class service_access;
+        friend class traits::access< basic_handle<threading_policy, data_interchange_policy, hash_policy>, 0>;
         server_container servers;
         pool_container pools;
 
