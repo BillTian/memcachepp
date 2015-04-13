@@ -7,6 +7,7 @@
 #ifndef __MEMCACHE_POLICIES_KETAMA_HASH_HPP__
 #define __MEMCACHE_POLICIES_KETAMA_HASH_HPP__
 
+#ifdef _MEMCACHE_SUPPORT_KETAMA
 #include <openssl/md5.h>
 #include <fstream>
 
@@ -24,37 +25,38 @@ namespace memcache {
             explicit server_hash_cacl(continuum_items_vec &items)
             : items_(items) { }
 
-            boost::uint32_t md5_hash(const std::string &key) const {
-                unsigned char results[16] = { 0 };
+            boost::uint32_t hash(const std::string &key) const {
+                boost::uint32_t value = 0;
 
-                MD5((unsigned char*)key.c_str(), key.size(), results);
+                for (size_t ki = 0; ki < key.size(); ++ki) {
+                    boost::uint32_t val = key.at(ki);
+                    value += val;
+                    value += (value << 10);
+                    value ^= (value >> 6);
+                }
+                value += (value << 3);
+                value ^= (value >> 11);
+                value += (value << 15);
 
-                using boost::uint32_t;
-                return ((uint32_t)(results[3] & 0xFF) << 24)
-                    | ((uint32_t)(results[2] & 0xFF) << 16)
-                    | ((uint32_t)(results[1] & 0xFF) << 8)
-                    | (results[0] & 0xFF);
+                return value == 0 ? 1 : (uint32_t)value;
             }
 
             template <typename T>
             void operator() (T const & server) const {
                 // TODO:
-                std::ofstream ofs("c:\\temp\\kh.log", std::ios_base::out | std::ios_base::app);
                 for (int pidx = 0; pidx < 100; ++pidx) {
-                    boost::uint32_t hashval;
+                    boost::uint32_t hashval = 0;
                     if (server.second.port == "11211") {
                         std::ostringstream ostr;
                         ostr << server.second.host << "-" << pidx;
-                        hashval = md5_hash(ostr.str());
+                        hashval = hash(ostr.str());
                     }
                     else {
                         std::ostringstream ostr;
                         ostr << server.second.host << ":" << server.second.port << "-" << pidx;
-                        hashval = md5_hash(ostr.str());
+                        hashval = hash(ostr.str());
                     }
                     items_.push_back(std::make_pair(server.second.index, hashval));
-                    ofs << server.second.host << ":" << server.second.port << "-" << pidx
-                        << "|" << server.second.index << "|" << items_.size() - 1 << "," << hashval << std::endl;
                 }
             }
         private:
@@ -114,6 +116,8 @@ namespace memcache {
     } // namespace policies
 
 } // namespace memcache
+
+#endif // _MEMCACHE_SUPPORT_KETAMA
 
 #endif // __MEMCACHE_POLICIES_KETAMA_HASH_HPP__
 
