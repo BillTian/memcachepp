@@ -411,9 +411,6 @@ namespace memcache {
         };
 
         private:
-
-        //typedef traits::access< basic_handle<threading_policy, data_interchange_policy, hash_policy>, 0> service_access;
-        //friend class service_access;
         friend class traits::access< basic_handle<threading_policy, data_interchange_policy, hash_policy>, 0>;
         server_container servers;
         pool_container pools;
