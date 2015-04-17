@@ -62,7 +62,7 @@ namespace memcache {
         hash_policy
     {
         BOOST_MOVABLE_BUT_NOT_COPYABLE(basic_handle)
-
+        public:
         typedef boost::shared_ptr<boost::asio::ip::tcp::socket> connection_ptr;
 
         struct server_info {
@@ -98,6 +98,11 @@ namespace memcache {
             typename threading_policy::lock scoped_lock(*this);
             for_each(servers.begin(), servers.end(), connect_impl(service_));
             hash_policy::init_hash(*this);
+        };
+
+        void re_connect() {
+            typename threading_policy::lock scoped_lock(*this);
+            for_each(servers.begin(), servers.end(), connect_impl(service_));
         };
 
         template <typename T> // T must be serializable
