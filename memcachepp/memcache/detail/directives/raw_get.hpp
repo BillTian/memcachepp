@@ -5,8 +5,8 @@
 // (See accompanying file LICENSE_1_0.txt or copy at
 // http://www.boost.org/LICENSE_1_0.txt)
 
-#ifndef __MEMCACHE_DETAIL_DIRECTIVES_RAW_GET_HPP__
-#define __MEMCACHE_DETAIL_DIRECTIVES_RAW_GET_HPP__
+#ifndef MEMCACHE_DETAIL_DIRECTIVES_RAW_GET_HPP__
+#define MEMCACHE_DETAIL_DIRECTIVES_RAW_GET_HPP__
 
 #include <memcachepp/memcache/detail/tags.hpp>
 
@@ -27,7 +27,7 @@ namespace memcache { namespace detail {
                     _key,
                     _value
                     );
-        };
+        }
 
         private:
 
@@ -35,14 +35,14 @@ namespace memcache { namespace detail {
         std::string & _value;
     };
 
-};
+}
 
     template <typename T>
     inline detail::raw_get_directive<> raw_get(T _key, std::string & holder) {
         return detail::raw_get_directive<>(std::string(_key), holder);
-    };
+    }
 
-};
+}
 
-#endif // __MEMCACHE_DETAIL_DIRECTIVES_RAW_GET_HPP__
+#endif // MEMCACHE_DETAIL_DIRECTIVES_RAW_GET_HPP__
 

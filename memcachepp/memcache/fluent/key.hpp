@@ -103,7 +103,7 @@ namespace memcache {
                         handle_ <<
                             ::memcache::set(key_, data, expiration_, failover_expiration_);
                         return *this;
-                    };
+                    }
 
                 key_impl const &
                 operator %=(string const & data) const {
@@ -195,7 +195,7 @@ namespace memcache {
         inline fluent::key_impl<Handle>
         key(Handle & handle, std::string const & key) {
             return fluent::key_impl<Handle>(handle, key);
-        };
+        }
 
 } // namespace memcache
 

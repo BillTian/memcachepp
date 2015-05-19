@@ -5,8 +5,8 @@
 // (See accompanying file LICENSE_1_0.txt or copy at
 // http://www.boost.org/LICENSE_1_0.txt)
 
-#ifndef __MEMCACHE_DETAIL_DESERIALIZER_HPP__
-#define __MEMCACHE_DETAIL_DESERIALIZER_HPP__
+#ifndef MEMCACHE_DETAIL_DESERIALIZER_HPP__
+#define MEMCACHE_DETAIL_DESERIALIZER_HPP__
 
 #include <string>
 #include <sstream>
@@ -26,12 +26,12 @@ namespace memcache { namespace detail {
             std::istream byte_buffer_stream(&byte_string_buffer);
             typename data_interchange_policy::iarchive ar(byte_buffer_stream);
             ar >> _holder;
-        };
+        }
     };
 
 } // namespace detail
 
 } // namespace memcache
 
-#endif // __MEMCACHE_DETAIL_DESERIALIZER_HPP__
+#endif // MEMCACHE_DETAIL_DESERIALIZER_HPP__
 

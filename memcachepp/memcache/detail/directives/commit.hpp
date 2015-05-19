@@ -5,33 +5,33 @@
 // (See accompanying file LICENSE_1_0.txt or copy at
 // http://www.boost.org/LICENSE_1_0.txt)
 
-#ifndef __MEMCACHE_DETAIL_DIRECTIVES_COMMIT_HPP__
-#define __MEMCACHE_DETAIL_DIRECTIVES_COMMIT_HPP__
+#ifndef MEMCACHE_DETAIL_DIRECTIVES_COMMIT_HPP__
+#define MEMCACHE_DETAIL_DIRECTIVES_COMMIT_HPP__
 
 namespace memcache {
 
     namespace helper {
         struct commit_directive;
-    };
+    }
 
     helper::commit_directive commit(helper::commit_directive);
 
     namespace helper {
         struct commit_directive {
         private:
-            commit_directive() { };
-            commit_directive(const commit_directive &) { };
+            commit_directive() { }
+            commit_directive(const commit_directive &) { }
             friend commit_directive memcache::commit(commit_directive);
         };
-    };
+    }
 
     typedef helper::commit_directive (*commit_directive_t)(helper::commit_directive);
 
     inline helper::commit_directive commit(helper::commit_directive) {
         return helper::commit_directive();
-    };
+    }
 
 } // namespace memcache
 
-#endif // __MEMCACHE_DETAIL_DIRECTIVES_commit_HPP__
+#endif // MEMCACHE_DETAIL_DIRECTIVES_commit_HPP__
 

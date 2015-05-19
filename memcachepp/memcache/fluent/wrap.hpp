@@ -36,7 +36,7 @@ namespace memcache {
                     operator=(Directive const & directive) const {
                         directive(_container);
                         return *this;
-                    };
+                    }
 
                 // conversion operator to return an lvalue reference
                 operator ContainedType& () {
@@ -56,7 +56,7 @@ namespace memcache {
             inline wrap_impl<ContainedType>
             wrap(ContainedType & contained) {
                 return wrap_impl<ContainedType>(contained);
-            };
+            }
 
     } // namespace fluent
 

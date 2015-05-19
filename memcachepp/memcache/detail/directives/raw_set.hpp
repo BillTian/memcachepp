@@ -5,8 +5,8 @@
 // (See accompanying file LICENSE_1_0.txt or copy at
 // http://www.boost.org/LICENSE_1_0.txt)
 
-#ifndef __MEMCACHE_DETAIL_DIRECTIVES_RAW_SET_HPP__
-#define __MEMCACHE_DETAIL_DIRECTIVES_RAW_SET_HPP__
+#ifndef MEMCACHE_DETAIL_DIRECTIVES_RAW_SET_HPP__
+#define MEMCACHE_DETAIL_DIRECTIVES_RAW_SET_HPP__
 
 #include <memcachepp/memcache/detail/expiration.hpp>
 #include <memcachepp/memcache/detail/tags.hpp>
@@ -31,7 +31,7 @@ namespace memcache { namespace detail {
                         _failover_timeout,
                         _flags
                         );
-            };
+            }
 
             private:
 
@@ -47,7 +47,7 @@ namespace memcache { namespace detail {
     template <class T>
     inline detail::raw_set_directive<> raw_set(T _key, std::string const & value, time_t timeout=0, time_t failover_timeout=0, boost::uint16_t flags = 0) {
         return detail::raw_set_directive<>(std::string(_key), value, flags, timeout, failover_timeout);
-    };
+    }
 
     template <class T>
     inline detail::raw_set_directive<> raw_set(T _key, std::string const & value, detail::expire_type const & expiration, boost::uint16_t flags = 0) {
@@ -71,5 +71,5 @@ namespace memcache { namespace detail {
 
 } // namespace memcache
 
-#endif // __MEMCACHE_DETAIL_DIRECTIVES_RAW_SET_HPP__
+#endif // MEMCACHE_DETAIL_DIRECTIVES_RAW_SET_HPP__
 

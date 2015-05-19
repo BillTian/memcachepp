@@ -30,7 +30,7 @@ namespace memcache {
                     (key, detail::deserializer<T, data_interchange_policy>(holder))
                 );
             key_hash[hash].insert(key);
-        };
+        }
 
         void perform() {
             std::for_each(key_hash.begin(), key_hash.end(),
@@ -116,8 +116,8 @@ namespace memcache {
                                 throw key_not_found(command_stream.str());
                             }
                             continue; // try the next iterator
-                        };
-                    };
+                        }
+                    }
 
                     std::istream response_stream(&buffer);
                     std::string line;
@@ -126,12 +126,13 @@ namespace memcache {
                     while (getline(response_stream, line)) {
                         if (response_stream.eof()) break;
                         data << line << '\n';
-                    };
+                    }
 
                     std::string data_string = data.str();
 
                     try {
-                        if (!detail::parse_response(data_string, callbacks)) {
+                        boost::uint64_t cas_value = 0u;
+                        if (!detail::parse_response(data_string, callbacks, cas_value)) {
                             std::istringstream tokenizer(data_string);
                             std::string first_token;
                             tokenizer >> first_token;
@@ -142,38 +143,38 @@ namespace memcache {
                                 (first_token == "SERVER_ERROR") ||
                                 (first_token == "CLIENT_ERROR"))
                                 throw invalid_response_found(data_string);
-                        };
+                        }
                     } catch (typename data_interchange_policy::archive_exception & e) {
                         std::ostringstream malformed_data_stream;
                         malformed_data_stream << command_stream.str()
                             << data_string;
                         throw malformed_data(malformed_data_stream.str());
-                    };
-                };
+                    }
+                }
                 ++server_iterator;
-            };
+            }
 
-        };
+        }
 
         void validate(std::string const & key) const {
             if (key.find('\r') != std::string::npos) throw invalid_key(key);
             if (key.find('\n') != std::string::npos) throw invalid_key(key);
             if (key.find('\t') != std::string::npos) throw invalid_key(key);
             if (key.find(' ') != std::string::npos) throw invalid_key(key);
-        };
-    };
+        }
+    }
 
     template <class threading_policy, class data_interchange_policy , class hash_policy, class directive_type>
     inline basic_request<threading_policy, data_interchange_policy, hash_policy> & operator<< (basic_request<threading_policy, data_interchange_policy, hash_policy> & _request, directive_type const & directive) {
         directive(_request);
         return _request;
-    };
+    }
 
     template <typename threading_policy, class data_interchange_policy, class hash_policy>
     inline basic_request<threading_policy, data_interchange_policy, hash_policy> & operator<< (basic_request<threading_policy, data_interchange_policy, hash_policy> & _request, commit_directive_t) {
         _request.perform();
         return _request;
-    };
+    }
 
 } // namespace memcache
 

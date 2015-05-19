@@ -5,8 +5,8 @@
 // (See accompanying file LICENSE_1_0.txt or copy at
 // http://www.boost.org/LICENSE_1_0.txt)
 
-#ifndef __MEMCACHE_DETAIL_DIRECTIVES_SERVER_HPP__
-#define __MEMCACHE_DETAIL_DIRECTIVES_SERVER_HPP__
+#ifndef MEMCACHE_DETAIL_DIRECTIVES_SERVER_HPP__
+#define MEMCACHE_DETAIL_DIRECTIVES_SERVER_HPP__
 
 #include <memcachepp/memcache/detail/tags.hpp>
 #include <string>
@@ -28,7 +28,7 @@ namespace memcache { namespace detail {
 
                 handle.add_server((_server_name + ':') + _port, s_info);
                 handle.add_pool((_server_name + ':') + _port, p_info);
-            };
+            }
 
             std::string _server_name, _port;
         };
@@ -39,9 +39,9 @@ namespace memcache { namespace detail {
     inline detail::server_directive<T> server(T _name, _T _port) {
         BOOST_STATIC_ASSERT((boost::is_integral<_T>::value));
         return detail::server_directive<T>(std::string(_name), boost::lexical_cast<std::string>(_port));
-    };
+    }
 
 } // namespace memcache
 
-#endif // __MEMCACHE_DETAIL_DIRECTIVES_SERVER_HPP__
+#endif // MEMCACHE_DETAIL_DIRECTIVES_SERVER_HPP__
 

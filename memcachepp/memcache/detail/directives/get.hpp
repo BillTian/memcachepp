@@ -5,15 +5,15 @@
 // (See accompanying file LICENSE_1_0.txt or copy at
 // http://www.boost.org/LICENSE_1_0.txt)
 
-#ifndef __MEMCACHE_DETAIL_DIRECTIVES_GET_HPP__
-#define __MEMCACHE_DETAIL_DIRECTIVES_GET_HPP__
+#ifndef MEMCACHE_DETAIL_DIRECTIVES_GET_HPP__
+#define MEMCACHE_DETAIL_DIRECTIVES_GET_HPP__
 
 namespace memcache { namespace detail {
 
     template <typename T>
     struct get_directive {
         explicit get_directive(std::string const & key, T & holder) :
-            _key(key), _holder(holder) { };
+            _key(key), _holder(holder) { }
 
         template <typename _T>
         void operator() (_T & handle) const {
@@ -27,7 +27,7 @@ namespace memcache { namespace detail {
                     _key,
                     _holder
                     );
-        };
+        }
 
         private:
 
@@ -40,9 +40,9 @@ namespace memcache { namespace detail {
     template <typename _T>
     inline detail::get_directive<_T> get(std::string const & _key, _T & holder) {
         return detail::get_directive<_T>(_key, holder);
-    };
+    }
 
 } // namespace detail
 
-#endif // __MEMCACHE_DETAIL_DIRECTIVES_GET_HPP__
+#endif // MEMCACHE_DETAIL_DIRECTIVES_GET_HPP__
 
