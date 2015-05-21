@@ -29,21 +29,21 @@ namespace memcache {
 
     struct key_not_found : exception {
         explicit key_not_found (string const & key) :
-            exception((string("Key not found: ") + key).c_str()) { };
+            exception((string("Key not found: ") + key).c_str()) { }
 
         ~key_not_found() throw () { }
     };
 
     struct malformed_data : exception {
         explicit malformed_data (string const & data) :
-            exception((string("Malformed data: ") + data).c_str()) { };
+            exception((string("Malformed data: ") + data).c_str()) { }
 
         ~malformed_data() throw () { }
     };
 
     struct invalid_key : exception {
         explicit invalid_key (string const & key) :
-            exception((string("Invalid key: ") + key).c_str()) { };
+            exception((string("Invalid key: ") + key).c_str()) { }
 
         ~invalid_key() throw () { }
     };
@@ -57,7 +57,7 @@ namespace memcache {
     struct offset_out_of_bounds : exception {
         explicit offset_out_of_bounds (size_t offset) :
             exception((string("Offset out of bounds: ") +
-                lexical_cast<string>(offset)).c_str()) { };
+                lexical_cast<string>(offset)).c_str()) { }
 
         ~offset_out_of_bounds() throw () { }
     };
@@ -65,21 +65,21 @@ namespace memcache {
     struct version_not_found : exception {
         explicit version_not_found (size_t offset) :
             exception((string("Version not found for server at offset")
-                        + lexical_cast<string>(offset)).c_str()) {};
+                        + lexical_cast<string>(offset)).c_str()) {}
 
         ~version_not_found() throw () { }
     };
 
     struct key_not_stored : exception {
         explicit key_not_stored (string const & key) :
-            exception((string("Key not stored: ") + key).c_str()) { };
+            exception((string("Key not stored: ") + key).c_str()) { }
 
         ~key_not_stored() throw () { }
     };
 
     struct invalid_response_found : exception {
         explicit invalid_response_found (string const & key) :
-            exception((string("Invalid response found for key: ") + key).c_str()) { };
+            exception((string("Invalid response found for key: ") + key).c_str()) { }
 
         ~invalid_response_found() throw () { }
     };

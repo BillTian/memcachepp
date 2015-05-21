@@ -20,7 +20,7 @@ namespace memcache {
 
         explicit basic_request (handle_type & handle) :
             threading_policy(), data_interchange_policy(), hash_policy(),
-            _handle(handle) { };
+            _handle(handle) { }
 
         template <typename T>
         void get(size_t hash, std::string const & key, T & holder) {
@@ -162,7 +162,7 @@ namespace memcache {
             if (key.find('\t') != std::string::npos) throw invalid_key(key);
             if (key.find(' ') != std::string::npos) throw invalid_key(key);
         }
-    }
+    };
 
     template <class threading_policy, class data_interchange_policy , class hash_policy, class directive_type>
     inline basic_request<threading_policy, data_interchange_policy, hash_policy> & operator<< (basic_request<threading_policy, data_interchange_policy, hash_policy> & _request, directive_type const & directive) {
